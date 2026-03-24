@@ -18,11 +18,10 @@ library(terra)
 # Data ———————— ####
 boundary_sf <- st_read("data/mpg_boundary.geojson", quiet = TRUE)
 thinpolys_sf <- st_read("data/sage_treatment.geojson", quiet = TRUE)
-
 sagevp_tif <- "data/predictions_xentropy_10m.tif"
 sagevp_r <- rast(sagevp_tif)  # SpatRaster
-
 herbs <- read_csv("data/gv_vp_herbaceous.csv", show_col_types = FALSE)
+pie_radius_init <- 10
 
 # Layer/group names (single source of truth)
 grp_boundary <- "Boundary"
@@ -64,7 +63,7 @@ ui <- fluidPage(
             sliderInput(
                 "pie_radius",
                 "Pie Chart Radius",
-                min = 0, max = 24, value = 12, step = 1,
+                min = 0, max = 24, value = pie_radius_init, step = 1,
                 post = "px",
                 ticks = FALSE
             ),
@@ -81,7 +80,7 @@ ui <- fluidPage(
 )
 
 # Functions ———————— ####
-make_pie_svg <- function(values, colors, radius = 16, stroke = "#222222", stroke_width = 1) {
+make_pie_svg <- function(values, colors, radius = pie_radius_init, stroke = "#222222", stroke_width = 1) {
     values <- as.numeric(values)
     
     if (all(is.na(values)) || sum(values, na.rm = TRUE) <= 0) {
@@ -195,8 +194,51 @@ server <- function(input, output, session) {
     herbs_wide$pie_html <- apply(
         herbs_wide[, pfg_cols],
         1,
-        function(x) make_pie_svg(x, unname(pfg_pal[pfg_cols]), radius = 16)
+        function(x) make_pie_svg(x, unname(pfg_pal[pfg_cols]), radius = pie_radius_init)
     )
+    
+    # Popups for point-level data
+    herb_popups <- herbs %>%
+        arrange(trans_num, cvr_code) %>%
+        mutate(
+            row_html = paste0(
+                "<tr>",
+                "<td style='padding:2px 6px; border-bottom:1px solid #ddd;'>", cvr_code, "</td>",
+                "<td style='padding:2px 6px; text-align:right; border-bottom:1px solid #ddd;'>", sprintf("%.1f", pct_cvr), "</td>",
+                "<td style='padding:2px 6px; text-align:right; border-bottom:1px solid #ddd;'>", sprintf("%.1f", pct_comp), "</td>",
+                "</tr>"
+            )
+        ) %>%
+        group_by(dataset, trans_num, lon, lat) %>%
+        summarise(
+            rows_html = paste(row_html, collapse = ""),
+            .groups = "drop"
+        ) %>%
+        mutate(
+            dataset_label = case_when(dataset == "gv_data" ~ "Grid Veg Data", dataset == "vp_data" ~ "Volepocalypse Data"),
+            popup_html = paste0(
+                "<div style='min-width:220px;'>",
+                "<div style='font-weight:600; margin-bottom:6px;'>", dataset_label, ", Transect ", trans_num,"</div>",
+                "<table style='border-collapse:collapse; width:100%; font-size:12px;'>",
+                "<thead>",
+                "<tr>",
+                "<th style='text-align:left; padding:2px 6px; border-bottom:2px solid #999;'>Plant group</th>",
+                "<th style='text-align:right; padding:2px 6px; border-bottom:2px solid #999;'>Cover (%)</th>",
+                "<th style='text-align:right; padding:2px 6px; border-bottom:2px solid #999;'>Composition (%)</th>",
+                "</tr>",
+                "</thead>",
+                "<tbody>",
+                rows_html,
+                "</tbody>",
+                "</table>",
+                "</div>"
+            )
+        )
+    herbs_wide <- herbs_wide %>%
+        left_join(
+            herb_popups,
+            by = c("dataset", "trans_num", "lon", "lat")
+        )
     
     # Bounding box based on pies
     bbox <- st_bbox(c(xmin = min(herbs_wide$lon), xmax = max(herbs_wide$lon), ymin = min(herbs_wide$lat), ymax = max(herbs_wide$lat)), crs = 4326)
@@ -241,6 +283,7 @@ server <- function(input, output, session) {
                 lng = ~lon,
                 lat = ~lat,
                 html = ~pie_html,
+                popup = ~popup_html,
                 className = "herb-pie-icon",
                 group = grp_herb_pies
             ) %>%
@@ -271,6 +314,7 @@ server <- function(input, output, session) {
             showGroup(grp_mortality) %>%
             hideGroup(grp_thins) %>%
             showGroup(grp_herb_pies) %>% 
+            # showGroup(grp_herb_hits) %>% 
             showGroup(grp_boundary)
     })
     
@@ -295,9 +339,24 @@ server <- function(input, output, session) {
             proxy %>% clearGroup(grp_mortality)
         }
         
-        if ("herbaceous" %in% sel) proxy %>% showGroup(grp_herb_pies) else proxy %>% hideGroup(grp_herb_pies)
-        if ("thins" %in% sel) proxy %>% showGroup(grp_thins) else proxy %>% hideGroup(grp_thins)
-        if ("boundary" %in% sel) proxy %>% showGroup(grp_boundary) else proxy %>% hideGroup(grp_boundary)
+        if ("herbaceous" %in% sel) {
+            proxy %>% showGroup(grp_herb_pies)
+        } else {
+            proxy %>% hideGroup(grp_herb_pies)
+        }
+        
+        if ("thins" %in% sel) {
+            proxy %>% showGroup(grp_thins)
+        }  else {
+            proxy %>% hideGroup(grp_thins)
+        }
+        
+        if ("boundary" %in% sel) {
+            proxy %>% showGroup(grp_boundary)
+        } else {
+            proxy %>% hideGroup(grp_boundary)
+        }
+        
     }, ignoreInit = TRUE, ignoreNULL = FALSE)
     
     # Opacity control observer
@@ -316,6 +375,7 @@ server <- function(input, output, session) {
                 project = TRUE,
                 group = grp_mortality
             )
+        
     }, ignoreInit = TRUE)
     
     # Radius control observer
