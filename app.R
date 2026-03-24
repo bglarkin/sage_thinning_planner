@@ -150,7 +150,7 @@ make_pie_legend_html <- function(cols, pal) {
     )
     
     paste0(
-        "<div style='background: rgba(255,255,255,0.25); padding: 6px 8px; border-radius: 6px; font-size: 14px; line-height: 1.1;'>",
+        "<div style='background: rgba(255,255,255,0.25); padding: 5px 5px; border-radius: 6px; font-size: 14px; line-height: 1.1;'>",
         "<div style='font-weight: 600; margin-bottom: 4px;'>Plant groups</div>",
         items,
         "</div>"
