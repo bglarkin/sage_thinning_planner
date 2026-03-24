@@ -1,3 +1,6 @@
+# Project library
+renv/library/
+
 # History files
 .Rhistory
 .Rapp.history
