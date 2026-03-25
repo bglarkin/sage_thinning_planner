@@ -15,7 +15,6 @@ library(leaflet)
 library(leaflet.extras2)
 library(sf)
 library(terra)
-library(rsconnect)
 
 # Data ———————— ####
 boundary_sf <- st_read("data/mpg_boundary.geojson", quiet = TRUE)
