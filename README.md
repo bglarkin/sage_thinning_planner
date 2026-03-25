@@ -1,14 +1,16 @@
 # Sage Thinning Planner
 
-<img src="dean_vp_survey.png" style="max-height: 400px; width: auto;">
-
-*Dean views a scene of heavy sage mortality due to "volepocalypse".*
-
 Pixels in the sage mortality overlay represent the presence of nearly all sage plants on MPG Ranch. 
 Users can view sage presence, the percentage of vole-killed sage within each 10 × 10 m pixel, 
 herbaceous layer composition at survey transects, and locations of past sage thinning efforts. 
 Together, these data help users consider potential vegetation responses associated with thinning, 
 given the composition of nearby vegetation.
+
+<p align="left">
+  <img src="dean_vp_survey.png" alt="MPG_sage_thinning_planner" style="max-width: 100%; max-height: 400px; width: auto; height: auto;">
+</p>
+
+*Dean views a scene of heavy sage mortality due to "volepocalypse".*
 
 ## History and Purpose
 During the winter of 2024–25, vole populations increased dramatically and consumed sage cambium 
