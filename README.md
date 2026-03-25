@@ -11,6 +11,10 @@ During the winter of 2024–25, vole populations increased dramatically and cons
 across large areas of MPG Ranch. Many sage plants were girdled and killed. In 2025, we measured 
 shrub and herbaceous vegetation to quantify sage mortality and track herbaceous community responses.
 
+![Sage Thinning Planner](www/dean_vp_survey.png)
+
+*Dean views a scene of heavy sage mortality due to "volepocalypse".*
+
 We expect sage regeneration to be slow in areas without additional disturbance, with a corresponding 
 increase in herbaceous vegetation. Locally abundant and competitive herbaceous species are likely to 
 have an advantage during recolonization.
@@ -51,10 +55,6 @@ machine-thinned, burned, or treated with combinations of these methods.
 
 ## Usage
 Users can toggle overlays using the checkboxes and adjust the opacity of the sage overlay and the size of pie charts using the sliders below.
-
-![Sage Thinning Planner](www/dean_vp_survey.png)
-
-*Dean views a scene of heavy sage mortality due to "volepocalypse".*
 
 ## Development
 The source code is available on <a href="https://github.com/bglarkin/sage_thinning_planner" target="_blank" rel="noopener noreferrer">Github</a>. 
