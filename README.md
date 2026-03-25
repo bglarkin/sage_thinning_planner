@@ -1,18 +1,60 @@
-# sage_thinning_planner
-Map displays the extent of sage cover and volepocalypse intensity overlaid with herbaceous 
-functional group cover and known thinning polygons. Users may plan thinning efforts around 
-the cover of undesirable herbaceous species in the vicinity. 
+# Sage Thinning Planner
+Pixels in the sage mortality overlay represent the presence of nearly all sage plants on MPG Ranch. 
+Users can view sage presence, the percentage of vole-killed sage within each 10 × 10 m pixel, 
+herbaceous layer composition at survey transects, and locations of past sage thinning efforts. 
+Together, these data help users consider potential vegetation responses associated with thinning, 
+given the composition of nearby vegetation.
 
-See Kyle's [documentation](https://docs.google.com/presentation/d/10YaN-7XTyDlqjZ6nJW-tCzRSJrhf6jTejLR_T4m0hEI/edit?usp=sharing) 
-on how the sage layer was produced. 
+## History and Purpose
+During the winter of 2024–25, vole populations increased dramatically and consumed sage cambium 
+across large areas of MPG Ranch. Many sage plants were girdled and killed. In 2025, we measured 
+shrub and herbaceous vegetation to quantify sage mortality and track herbaceous community responses.
 
-Edit and add text to the readme to make it more informative. Consider adding Kyle in case he wants to add documentation about the volepoc raster layer.
+We expect sage regeneration to be slow in areas without additional disturbance, with a corresponding 
+increase in herbaceous vegetation. Locally abundant and competitive herbaceous species are likely to 
+have an advantage during recolonization.
 
-Some questions that the readme should answer:
+A similar process may occur in areas where sage is mechanically thinned to promote herbaceous forage. 
+Where sage mortality is anticipated—whether due to thinning or vole activity—it may be useful to 
+consider the surrounding vegetation during planning. High abundance of exotic annual grasses or 
+exotic perennial forbs may suggest selecting alternative sites for thinning, such as those with stronger native herbaceous communities.
 
-- What is the minimum percent cover of sage in the raster pixels?
-- Herbaceous: composition vs pct cover?
-- List the PFGs
-- Some info about the volepoc project
 
-Maybe have chat summarize Kyle's slides or something...
+## Map Display
+The map shows MPG Ranch with several user-controlled overlays.  
+
+1. **Sage Mortality heatmap overlay.** This surface was created by Kyle Doherty using drone imagery 
+and plant survey data. It shows areas with at least 0.25 m<sup>2</sup> of sage within each 10 × 10 m pixel. 
+Pixel colors represent the percentage of vole-killed sage, estimated from image analysis, 
+ground-based data, and machine learning. Kyle’s latest report is available
+<a href="https://docs.google.com/presentation/d/10YaN-7XTyDlqjZ6nJW-tCzRSJrhf6jTejLR_T4m0hEI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">here.</a>.
+2. **Herbaceous Composition Pie Charts.** Pie charts show the composition of the herbaceous layer, 
+grouped by plant functional type (see codes below). These data come from two sources: periodic 
+vegetation surveys (aka "grid-veg") and a one-time survey conducted in 2025 for the vole outbreak.
+Click a pie to view percent cover, composition, and data source for each location. Composition 
+represents the proportion of total herbaceous cover contributed by each group and always sums to 100%. 
+For example, if total herbaceous cover is 16% and native perennial grasses account for 8%, their composition is 50%.
+Thus, composition identifies which functional group dominates the community, regardless of total cover. 
+Based on expected post-sage succession, dominant groups are likely to expand following sage loss.
+   - **Plant Functional Group Codes**
+   1. **EAF** — exotic annual forb
+   2. **EAG** — exotic annual grass
+   3. **EPF** — exotic perennial forb
+   4. **EPG** — exotic perennial grass
+   5. **NAF** — narive annual forb
+   6. **NAG** — native annual grass
+   7. **NPF** — native perennial forb
+   8. **NPG** — native perennial grass
+3. **Existing Sage Thins.** Provided by Chuck Casper. Polygons delineate areas that have been hand-thinned, 
+machine-thinned, burned, or treated with combinations of these methods.
+4. **MPG Ranch Boundary.**
+
+## Usage
+Users can toggle overlays using the checkboxes and adjust the opacity of the sage overlay and the size of pie charts using the sliders below.
+
+## Development
+The source code is available on <a href="https://github.com/bglarkin/sage_thinning_planner" target="_blank" rel="noopener noreferrer">Github</a>. 
+Please submit issues there or contact Beau @ MPG Ranch with questions. 
+
+
+
