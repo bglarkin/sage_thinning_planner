@@ -1,4 +1,12 @@
 # Sage Thinning Planner
+
+<figure>
+  <img src="images/dean_vp_survey.png" height="400">
+  <figcaption>
+    Dean views a scene of heavy sage mortality due to "volepocalypse".
+  </figcaption>
+</figure>
+
 Pixels in the sage mortality overlay represent the presence of nearly all sage plants on MPG Ranch. 
 Users can view sage presence, the percentage of vole-killed sage within each 10 × 10 m pixel, 
 herbaceous layer composition at survey transects, and locations of past sage thinning efforts. 
