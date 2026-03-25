@@ -7,7 +7,7 @@ Together, these data help users consider potential vegetation responses associat
 given the composition of nearby vegetation.
 
 <p align="left">
-  <img src="dean_vp_survey.png" alt="MPG_sage_thinning_planner" style="max-width: 100%; max-height: 400px; width: auto; height: auto;">
+  <img src="www/dean_vp_survey.png" alt="MPG_sage_thinning_planner" style="max-width: 100%; max-height: 400px; width: auto; height: auto;">
 </p>
 
 *Dean views a scene of heavy sage mortality due to "volepocalypse".*
