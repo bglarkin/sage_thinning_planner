@@ -27,7 +27,7 @@ The map shows MPG Ranch with several user-controlled overlays.
 and plant survey data. It shows areas with at least 0.25 m<sup>2</sup> of sage within each 10 × 10 m pixel. 
 Pixel colors represent the percentage of vole-killed sage, estimated from image analysis, 
 ground-based data, and machine learning. Kyle’s latest report is available
-<a href="https://docs.google.com/presentation/d/10YaN-7XTyDlqjZ6nJW-tCzRSJrhf6jTejLR_T4m0hEI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">here.</a>.
+<a href="https://docs.google.com/presentation/d/10YaN-7XTyDlqjZ6nJW-tCzRSJrhf6jTejLR_T4m0hEI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">here</a>.
 2. **Herbaceous Composition Pie Charts.** Pie charts show the composition of the herbaceous layer, 
 grouped by plant functional type (see codes below). These data come from two sources: periodic 
 vegetation surveys (aka "grid-veg") and a one-time survey conducted in 2025 for the vole outbreak.
@@ -37,17 +37,17 @@ For example, if total herbaceous cover is 16% and native perennial grasses accou
 Thus, composition identifies which functional group dominates the community, regardless of total cover. 
 Based on expected post-sage succession, dominant groups are likely to expand following sage loss.
    - **Plant Functional Group Codes**
-   1. **EAF** — exotic annual forb
-   2. **EAG** — exotic annual grass
-   3. **EPF** — exotic perennial forb
-   4. **EPG** — exotic perennial grass
-   5. **NAF** — narive annual forb
-   6. **NAG** — native annual grass
-   7. **NPF** — native perennial forb
-   8. **NPG** — native perennial grass
+       - **EAF** — exotic annual forb
+       - **EAG** — exotic annual grass
+       - **EPF** — exotic perennial forb
+       - **EPG** — exotic perennial grass
+       - **NAF** — narive annual forb
+       - **NAG** — native annual grass
+       - **NPF** — native perennial forb
+       - **NPG** — native perennial grass
 3. **Existing Sage Thins.** Provided by Chuck Casper. Polygons delineate areas that have been hand-thinned, 
 machine-thinned, burned, or treated with combinations of these methods.
-4. **MPG Ranch Boundary.**
+4. **MPG Ranch Boundary.** From Chuck Casper (2018). 
 
 ## Usage
 Users can toggle overlays using the checkboxes and adjust the opacity of the sage overlay and the size of pie charts using the sliders below.
