@@ -6,9 +6,7 @@ herbaceous layer composition at survey transects, and locations of past sage thi
 Together, these data help users consider potential vegetation responses associated with thinning, 
 given the composition of nearby vegetation.
 
-<p align="left">
-  <img src="www/dean_vp_survey.png" alt="MPG_sage_thinning_planner" style="max-width: 100%; max-height: 400px; width: auto; height: auto;">
-</p>
+![Sage Thinning Planner](www/dean_vp_survey.png)
 
 *Dean views a scene of heavy sage mortality due to "volepocalypse".*
 
