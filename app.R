@@ -32,7 +32,40 @@ grp_herb_pies <- "Herbaceous composition"
 
 # UI ———————— ####
 ui <- tagList(
-    tags$head(tags$style(HTML(".leaflet-div-icon.herb-pie-icon {background: transparent;border: none;}"))),
+    tags$head(
+        tags$style(HTML("
+            .leaflet-div-icon.herb-pie-icon {
+                background: transparent;
+                border: none;
+            }
+
+            .section-gap {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .subtle-divider {
+                border-top: 1px solid rgba(0, 0, 0, 0.08);
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .helper-text {
+                font-size: 0.9rem;
+                color: #6c757d;
+                margin-top: 0.35rem;
+                margin-bottom: 0;
+            }
+
+            .control-stack > * {
+                margin-bottom: 0.75rem;
+            }
+
+            .sidebar-note p:last-child {
+                margin-bottom: 0;
+            }
+        "))
+    ),
     
     navbarPage(
         "Sage Thinning Planner",
@@ -44,42 +77,69 @@ ui <- tagList(
             sidebarLayout(
                 sidebarPanel(
                     width = 3,
-                    tags$h4("Information"),
-                    tags$p("Explanatory text"),
+                    
+                    tags$h4("Description"),
+                    div(
+                        class = "sidebar-note",
+                        tags$p("This map links sage mortality with herbaceous community composition."),
+                        tags$p("Following sage loss, dominant herbaceous groups are expected to expand."),
+                        tags$p("Click pie charts to view detailed cover, composition, and data source. Pie charts show composition as a percent of total herbaceous cover, highlighting which groups dominate each site.")
+                    ),
+                    
+                    tags$div(class = "subtle-divider"),
+                    
                     tags$h4("Layers"),
-                    checkboxGroupInput(
-                        "overlays",
-                        label = NULL,
-                        choices = c(
-                            "Show sage mortality" = "mortality",
-                            "Show herbaceous composition" = "herbaceous",
-                            "Show existing sage thins" = "thins",
-                            "Show MPG boundary" = "boundary"
+                    div(
+                        class = "control-stack",
+                        checkboxGroupInput(
+                            "overlays",
+                            label = NULL,
+                            choices = c(
+                                "Show sage mortality" = "mortality",
+                                "Show herbaceous composition" = "herbaceous",
+                                "Show existing sage thins" = "thins",
+                                "Show MPG boundary" = "boundary"
+                            ),
+                            selected = c("mortality", "herbaceous", "boundary")
+                        )
+                    ),
+                    
+                    tags$div(class = "subtle-divider"),
+                    
+                    tags$h4("Display"),
+                    div(
+                        class = "control-stack",
+                        sliderInput(
+                            "mortality_opacity",
+                            "Sage mortality opacity",
+                            min = 0, max = 100, value = 100, step = 1,
+                            post = "%",
+                            ticks = FALSE
                         ),
-                        selected = c("mortality", "herbaceous", "boundary")
+                        
+                        sliderInput(
+                            "pie_radius",
+                            "Pie chart radius",
+                            min = 0, max = 24, value = pie_radius_init, step = 1,
+                            post = "px",
+                            ticks = FALSE
+                        )
                     ),
                     
-                    tags$hr(),
-                    sliderInput(
-                        "mortality_opacity",
-                        "Sage mortality opacity",
-                        min = 0, max = 100, value = 100, step = 1,
-                        post = "%",
-                        ticks = FALSE
-                    ),
+                    tags$div(class = "subtle-divider"),
                     
-                    tags$hr(),
-                    sliderInput(
-                        "pie_radius",
-                        "Pie Chart Radius",
-                        min = 0, max = 24, value = pie_radius_init, step = 1,
-                        post = "px",
-                        ticks = FALSE
+                    tags$h4("Notes"),
+                    div(
+                        class = "sidebar-note",
+                        tags$p("Herbaceous data come from both long-term grid surveys and a 2025 vole-impact survey."),
+                        tags$p("Sage pixels indicate areas with \u22650.25 m\u00B2 of sage per 10 \u00D7 10 m cell."),
+                        tags$p("Plant group codes indicate origin (E = exotic, N = native), life span (A = annual, P = perennial), and growth form (F = forb, G = grass).")
                     )
                 ),
+                
                 mainPanel(
                     width = 9,
-                    leafletOutput("map", height = "calc(100vh - 120px)")    
+                    leafletOutput("map", height = "calc(100vh - 120px)")
                 )
             )
         ),
