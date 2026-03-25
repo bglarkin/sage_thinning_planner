@@ -6,10 +6,6 @@ herbaceous layer composition at survey transects, and locations of past sage thi
 Together, these data help users consider potential vegetation responses associated with thinning, 
 given the composition of nearby vegetation.
 
-![Sage Thinning Planner](www/dean_vp_survey.png)
-
-*Dean views a scene of heavy sage mortality due to "volepocalypse".*
-
 ## History and Purpose
 During the winter of 2024–25, vole populations increased dramatically and consumed sage cambium 
 across large areas of MPG Ranch. Many sage plants were girdled and killed. In 2025, we measured 
@@ -23,7 +19,6 @@ A similar process may occur in areas where sage is mechanically thinned to promo
 Where sage mortality is anticipated—whether due to thinning or vole activity—it may be useful to 
 consider the surrounding vegetation during planning. High abundance of exotic annual grasses or 
 exotic perennial forbs may suggest selecting alternative sites for thinning, such as those with stronger native herbaceous communities.
-
 
 ## Map Display
 The map shows MPG Ranch with several user-controlled overlays.  
@@ -56,6 +51,10 @@ machine-thinned, burned, or treated with combinations of these methods.
 
 ## Usage
 Users can toggle overlays using the checkboxes and adjust the opacity of the sage overlay and the size of pie charts using the sliders below.
+
+![Sage Thinning Planner](www/dean_vp_survey.png)
+
+*Dean views a scene of heavy sage mortality due to "volepocalypse".*
 
 ## Development
 The source code is available on <a href="https://github.com/bglarkin/sage_thinning_planner" target="_blank" rel="noopener noreferrer">Github</a>. 
