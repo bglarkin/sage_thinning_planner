@@ -15,6 +15,7 @@ library(leaflet)
 library(leaflet.extras2)
 library(sf)
 library(terra)
+library(rsconnect)
 
 # Data ———————— ####
 boundary_sf <- st_read("data/mpg_boundary.geojson", quiet = TRUE)
@@ -323,7 +324,6 @@ server <- function(input, output, session) {
     output$map <- renderLeaflet({
         leaflet(options = leafletOptions(preferCanvas = TRUE)) %>%
             addProviderTiles("Esri.WorldImagery", group = "Imagery") %>%
-            addProviderTiles("CartoDB.Positron", group = "Light") %>%
             fitBounds(xmin, ymin, xmax, ymax) %>%
             # Boundary outline
             addPolygons(
