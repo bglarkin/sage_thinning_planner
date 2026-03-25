@@ -1,7 +1,7 @@
 # Sage Thinning Planner
 
 <figure>
-  <img src="dean_vp_survey.png" height="400">
+  <img src="www/dean_vp_survey.png" height="400">
   <figcaption>
     Dean views a scene of heavy sage mortality due to "volepocalypse".
   </figcaption>
