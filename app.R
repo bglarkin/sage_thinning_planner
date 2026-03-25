@@ -9,6 +9,7 @@ library(bslib)
 library(dplyr)
 library(readr)
 library(tidyr)
+library(markdown)
 library(colorspace)
 library(leaflet)
 library(leaflet.extras2)
@@ -30,51 +31,62 @@ grp_thins <- "Existing sage thins"
 grp_herb_pies <- "Herbaceous composition"
 
 # UI ———————— ####
-ui <- fluidPage(
+ui <- tagList(
     tags$head(tags$style(HTML(".leaflet-div-icon.herb-pie-icon {background: transparent;border: none;}"))),
-    theme = bs_theme(version = 5, bootswatch = "flatly"),
-    titlePanel("Sage Thinning Planner"),
-    sidebarLayout(
-        sidebarPanel(
-            width = 3,
-            tags$h4("Layers"),
-            checkboxGroupInput(
-                "overlays",
-                label = NULL,
-                choices = c(
-                    "Show sage mortality" = "mortality",
-                    "Show herbaceous composition" = "herbaceous",
-                    "Show existing sage thins" = "thins",
-                    "Show MPG boundary" = "boundary"
+    
+    navbarPage(
+        "Sage Thinning Planner",
+        theme = bs_theme(version = 5, bootswatch = "flatly"),
+        id = "main_nav",
+        
+        tabPanel(
+            "Map and data",
+            sidebarLayout(
+                sidebarPanel(
+                    width = 3,
+                    tags$h4("Information"),
+                    tags$p("Explanatory text"),
+                    tags$h4("Layers"),
+                    checkboxGroupInput(
+                        "overlays",
+                        label = NULL,
+                        choices = c(
+                            "Show sage mortality" = "mortality",
+                            "Show herbaceous composition" = "herbaceous",
+                            "Show existing sage thins" = "thins",
+                            "Show MPG boundary" = "boundary"
+                        ),
+                        selected = c("mortality", "herbaceous", "boundary")
+                    ),
+                    
+                    tags$hr(),
+                    sliderInput(
+                        "mortality_opacity",
+                        "Sage mortality opacity",
+                        min = 0, max = 100, value = 100, step = 1,
+                        post = "%",
+                        ticks = FALSE
+                    ),
+                    
+                    tags$hr(),
+                    sliderInput(
+                        "pie_radius",
+                        "Pie Chart Radius",
+                        min = 0, max = 24, value = pie_radius_init, step = 1,
+                        post = "px",
+                        ticks = FALSE
+                    )
                 ),
-                selected = c("mortality", "herbaceous", "boundary")
-            ),
-            
-            tags$hr(),
-            sliderInput(
-                "mortality_opacity",
-                "Sage mortality opacity",
-                min = 0, max = 100, value = 60, step = 1,
-                post = "%",
-                ticks = FALSE
-            ),
-            
-            tags$hr(),
-            sliderInput(
-                "pie_radius",
-                "Pie Chart Radius",
-                min = 0, max = 24, value = pie_radius_init, step = 1,
-                post = "px",
-                ticks = FALSE
-            ),
-            
-            tags$hr(),
-            tags$h4("Information"),
-            tags$p("Explanatory text")
+                mainPanel(
+                    width = 9,
+                    leafletOutput("map", height = "calc(100vh - 120px)")    
+                )
+            )
         ),
-        mainPanel(
-            width = 9,
-            leafletOutput("map", height = "calc(100vh - 120px)")
+        
+        tabPanel(
+            "Readme",
+            includeMarkdown("README.md")
         )
     )
 )
@@ -266,7 +278,7 @@ server <- function(input, output, session) {
             addRasterImage(
                 sagevp_r,
                 colors = pal,
-                opacity = 0.60,
+                opacity = 1,
                 project = TRUE,
                 group = grp_mortality
             ) %>%
@@ -398,6 +410,7 @@ server <- function(input, output, session) {
                 lng = ~lon,
                 lat = ~lat,
                 html = ~pie_html,
+                popup = ~popup_html,
                 className = "herb-pie-icon",
                 group = grp_herb_pies
             )
