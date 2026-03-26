@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Rscript -e 'library\\(sf\\); x <- st_read\\(\"data/aoi_alphashape_2024.geojson\", quiet=TRUE\\); cat\\(\"Geometry type:\", as.character\\(st_geometry_type\\(x, by_geometry=FALSE\\)\\), \"\\\\n\"\\); cat\\(\"Features:\", nrow\\(x\\), \"\\\\n\"\\); cat\\(\"CRS:\", st_crs\\(x\\)$input, \"\\\\n\"\\); cat\\(\"Columns:\", paste\\(names\\(x\\), collapse=\", \"\\), \"\\\\n\"\\)')",
+      "Bash(Rscript -e 'renv::restore\\(prompt=FALSE\\)')",
+      "Bash(PROJ_DATA=/opt/homebrew/share/proj Rscript -e 'renv::restore\\(prompt=FALSE\\)')",
+      "Bash(PROJ_LIB=/opt/homebrew/share/proj PROJ_DATA=/opt/homebrew/share/proj Rscript -e 'install.packages\\(\"\"\"\"terra\"\"\"\", repos=\"\"\"\"https://cran.r-project.org\"\"\"\"\\)')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:7463/)",
+      "Bash(RENV_CONFIG_AUTOLOADER_ENABLED=FALSE R_LIBS_USER=\"/Users/kdoherty/Library/R/arm64/4.5/library\" Rscript -e 'install.packages\\(c\\(\"markdown\", \"leaflet.extras2\", \"colorspace\"\\), repos=\"https://cran.r-project.org\", quiet=TRUE\\)' 2>&1)"
+    ]
+  }
+}

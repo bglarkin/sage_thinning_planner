@@ -19,6 +19,8 @@ library(terra)
 # Data ———————— ####
 boundary_sf <- st_read("data/mpg_boundary.geojson", quiet = TRUE)
 thinpolys_sf <- st_read("data/sage_treatment.geojson", quiet = TRUE)
+aoi_raw <- st_read("data/aoi_alphashape_2024.geojson", quiet = TRUE) |> st_buffer(30)
+aoi_sf  <- st_intersection(aoi_raw, st_transform(boundary_sf, st_crs(aoi_raw))) |> st_transform(4326)
 sagevp_tif <- "data/predictions_xentropy_10m.tif"
 sagevp_r <- rast(sagevp_tif)  # SpatRaster
 herbs <- read_csv("data/gv_vp_herbaceous.csv", show_col_types = FALSE)
@@ -29,6 +31,7 @@ grp_boundary <- "Boundary"
 grp_mortality <- "Sage mortality"
 grp_thins <- "Existing sage thins"
 grp_herb_pies <- "Herbaceous composition"
+grp_aoi <- "2024 Drone Survey"
 
 # UI ———————— ####
 ui <- tagList(
@@ -98,9 +101,10 @@ ui <- tagList(
                                 "Show sage mortality" = "mortality",
                                 "Show herbaceous composition" = "herbaceous",
                                 "Show existing sage thins" = "thins",
+                                "Show 2024 drone survey" = "aoi",
                                 "Show MPG boundary" = "boundary"
                             ),
-                            selected = c("mortality", "herbaceous", "boundary")
+                            selected = c("mortality", "herbaceous", "aoi", "boundary")
                         )
                     ),
                     
@@ -131,6 +135,7 @@ ui <- tagList(
                     tags$h4("Notes"),
                     div(
                         class = "sidebar-note",
+                        tags$p("The 2024 Drone Survey polygon defines the bounds of the sagebrush mapping effort."),
                         tags$p("Herbaceous data come from both long-term grid surveys and a 2025 vole-impact survey."),
                         tags$p("Sage pixels indicate areas with \u22650.25 m\u00B2 of sage per 10 \u00D7 10 m cell."),
                         tags$p("Plant group codes indicate origin (E = exotic, N = native), life span (A = annual, P = perennial), and growth form (F = forb, G = grass).")
@@ -333,6 +338,15 @@ server <- function(input, output, session) {
                 weight = 2,
                 group = grp_boundary
             ) %>%
+            # 2024 Drone Survey AOI
+            addPolygons(
+                data = aoi_sf,
+                fill = FALSE,
+                color = "#00FFFF",
+                opacity = 0.9,
+                weight = 2,
+                group = grp_aoi
+            ) %>%
             # # Sage mortality raster overlay (added once; toggled via show/hide, plus legend)
             addRasterImage(
                 sagevp_r,
@@ -362,6 +376,16 @@ server <- function(input, output, session) {
                 html = pie_legend_html,
                 position = "bottomright"
             ) %>%
+            addControl(
+                html = paste0(
+                    "<div style='background: rgba(255,255,255,0.25); padding: 5px 5px; border-radius: 6px; font-size: 14px; line-height: 1.1;'>",
+                    "<div style='display:flex; align-items:center;'>",
+                    "<span style='display:inline-block; width:18px; height:0; border-top:2px solid #00FFFF; margin-right:6px;'></span>",
+                    "<span>2024 Drone Survey</span>",
+                    "</div></div>"
+                ),
+                position = "bottomright"
+            ) %>%
             # Existing thinning polygons (added once; toggled via show/hide)
             addPolygons(
                 data = thinpolys_sf,
@@ -379,8 +403,8 @@ server <- function(input, output, session) {
             # Control initial state of overlays
             showGroup(grp_mortality) %>%
             hideGroup(grp_thins) %>%
-            showGroup(grp_herb_pies) %>% 
-            # showGroup(grp_herb_hits) %>% 
+            showGroup(grp_herb_pies) %>%
+            showGroup(grp_aoi) %>%
             showGroup(grp_boundary)
     })
     
@@ -417,6 +441,12 @@ server <- function(input, output, session) {
             proxy %>% hideGroup(grp_thins)
         }
         
+        if ("aoi" %in% sel) {
+            proxy %>% showGroup(grp_aoi)
+        } else {
+            proxy %>% hideGroup(grp_aoi)
+        }
+
         if ("boundary" %in% sel) {
             proxy %>% showGroup(grp_boundary)
         } else {
