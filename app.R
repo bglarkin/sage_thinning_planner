@@ -322,7 +322,7 @@ server <- function(input, output, session) {
     # Map
     output$map <- renderLeaflet({
         leaflet(options = leafletOptions(preferCanvas = TRUE)) %>%
-            addProviderTiles("Esri.WorldImagery", group = "Imagery") %>%
+            addProviderTiles("Esri.WorldImagery") %>%
             fitBounds(xmin, ymin, xmax, ymax) %>%
             # Boundary outline
             addPolygons(
@@ -375,11 +375,6 @@ server <- function(input, output, session) {
                     "<b>Method:</b> ", Method, "<br/>",
                     "<b>Type:</b> ", Type
                 )
-            ) %>%
-            # Map-side control for base layers only (Imagery vs Light)
-            addLayersControl(
-                baseGroups = c("Imagery", "Light"),
-                options = layersControlOptions(collapsed = TRUE)
             ) %>%
             # Control initial state of overlays
             showGroup(grp_mortality) %>%
