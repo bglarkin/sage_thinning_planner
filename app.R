@@ -19,6 +19,8 @@ library(terra)
 # Data ———————— ####
 boundary_sf <- st_read("data/mpg_boundary.geojson", quiet = TRUE)
 thinpolys_sf <- st_read("data/sage_treatment.geojson", quiet = TRUE)
+aoi_raw <- st_read("data/aoi_alphashape_2024.geojson", quiet = TRUE) |> st_buffer(30)
+aoi_sf  <- st_intersection(aoi_raw, st_transform(boundary_sf, st_crs(aoi_raw))) |> st_transform(4326)
 sagevp_tif <- "data/predictions_xentropy_10m.tif"
 sagevp_r <- rast(sagevp_tif)  # SpatRaster
 herbs <- read_csv("data/gv_vp_herbaceous.csv", show_col_types = FALSE)
@@ -29,6 +31,7 @@ grp_boundary <- "Boundary"
 grp_mortality <- "Sage mortality"
 grp_thins <- "Existing sage thins"
 grp_herb_pies <- "Herbaceous composition"
+grp_aoi <- "2024 Drone Survey"
 
 # UI ———————— ####
 ui <- tagList(
@@ -64,6 +67,21 @@ ui <- tagList(
             .sidebar-note p:last-child {
                 margin-bottom: 0;
             }
+            
+            .sidebar-scroll {
+                max-height: calc(100vh - 120px);
+                overflow-y: auto;
+                padding-right: 0.5rem;
+            }
+
+            .map-panel-fixed {
+                 height: calc(100vh - 120px);
+            }
+
+            .map-panel-fixed .leaflet,
+            .map-panel-fixed .leaflet-container {
+                 height: 100% !important;
+            }
         "))
     ),
     
@@ -74,72 +92,93 @@ ui <- tagList(
         
         tabPanel(
             "Map and data",
-            sidebarLayout(
-                sidebarPanel(
-                    width = 3,
+            fluidRow(
+                column(
+                    width = 4,
                     
-                    tags$h4("Description"),
                     div(
-                        class = "sidebar-note",
-                        tags$p("This map links sage mortality with herbaceous community composition."),
-                        tags$p("Following sage loss, dominant herbaceous groups are expected to expand."),
-                        tags$p("Click pie charts to view detailed cover, composition, and data source. Pie charts show composition as a percent of total herbaceous cover, highlighting which groups dominate each site.")
-                    ),
-                    
-                    tags$div(class = "subtle-divider"),
-                    
-                    tags$h4("Layers"),
-                    div(
-                        class = "control-stack",
-                        checkboxGroupInput(
-                            "overlays",
-                            label = NULL,
-                            choices = c(
-                                "Show sage mortality" = "mortality",
-                                "Show herbaceous composition" = "herbaceous",
-                                "Show existing sage thins" = "thins",
-                                "Show MPG boundary" = "boundary"
-                            ),
-                            selected = c("mortality", "herbaceous", "boundary")
-                        )
-                    ),
-                    
-                    tags$div(class = "subtle-divider"),
-                    
-                    tags$h4("Display"),
-                    div(
-                        class = "control-stack",
-                        sliderInput(
-                            "mortality_opacity",
-                            "Sage mortality opacity",
-                            min = 0, max = 100, value = 100, step = 1,
-                            post = "%",
-                            ticks = FALSE
+                        class = "sidebar-scroll",
+                        tags$h4("Description"),
+                        div(
+                            class = "sidebar-note",
+                            tags$p("This map links sage mortality with herbaceous community composition."),
+                            tags$p("Following sage loss, dominant herbaceous groups are expected to expand."),
+                            tags$p("Click pie charts to view detailed cover, composition, and data source. Pie charts show composition as a percent of total herbaceous cover, highlighting which groups dominate each site.")
                         ),
                         
-                        sliderInput(
-                            "pie_radius",
-                            "Pie chart radius",
-                            min = 0, max = 24, value = pie_radius_init, step = 1,
-                            post = "px",
-                            ticks = FALSE
+                        tags$div(class = "subtle-divider"),
+                        
+                        tags$h4("Layers"),
+                        div(
+                            class = "control-stack",
+                            checkboxGroupInput(
+                                "overlays",
+                                label = NULL,
+                                choices = c(
+                                    "Show sage mortality" = "mortality",
+                                    "Show herbaceous composition" = "herbaceous",
+                                    "Show existing sage thins" = "thins",
+                                    # "Show 2024 drone survey" = "aoi",
+                                    "Show MPG boundary" = "boundary"
+                                ),
+                                selected = c("mortality", "herbaceous", "aoi", "boundary")
+                            )
+                        ),
+                        
+                        tags$div(class = "subtle-divider"),
+                        
+                        tags$h4("Display"),
+                        div(
+                            class = "control-stack",
+                            sliderInput(
+                                "mortality_opacity",
+                                "Sage mortality opacity",
+                                min = 0, max = 100, value = 100, step = 1,
+                                post = "%",
+                                ticks = FALSE,
+                                width = "60%"
+                            ),
+                            
+                            sliderInput(
+                                "pie_radius",
+                                "Pie chart radius",
+                                min = 0, max = 24, value = pie_radius_init, step = 1,
+                                post = "px",
+                                ticks = FALSE,
+                                width = "60%"
+                            )
+                        ),
+                        
+                        tags$div(class = "subtle-divider"),
+                        
+                        actionButton(
+                            "reset_map_view",
+                            "Reset map view",
+                            class = "btn btn-outline-success",
+                            width = "50%"
+                        ),
+                        
+                        tags$div(class = "subtle-divider"),
+                        
+                        tags$h4("Notes \u2193"),
+                        div(
+                            class = "sidebar-note",
+                            tags$p("The 2024 Drone Survey polygon defines the bounds of the sagebrush mapping effort. 
+                               Sagebrush and associated vegetation data exist outside of this boundary."),
+                            tags$p("Herbaceous data come from both long-term grid surveys and a 2025 vole-impact survey."),
+                            tags$p("Sage pixels indicate areas with \u22650.25 m\u00B2 of sage per 10 \u00D7 10 m cell."),
+                            tags$p("Plant group codes indicate origin (E = exotic, N = native), life span (A = annual, P = perennial), 
+                               and growth form (F = forb, G = grass).")
                         )
-                    ),
-                    
-                    tags$div(class = "subtle-divider"),
-                    
-                    tags$h4("Notes"),
-                    div(
-                        class = "sidebar-note",
-                        tags$p("Herbaceous data come from both long-term grid surveys and a 2025 vole-impact survey."),
-                        tags$p("Sage pixels indicate areas with \u22650.25 m\u00B2 of sage per 10 \u00D7 10 m cell."),
-                        tags$p("Plant group codes indicate origin (E = exotic, N = native), life span (A = annual, P = perennial), and growth form (F = forb, G = grass).")
                     )
                 ),
                 
-                mainPanel(
-                    width = 9,
-                    leafletOutput("map", height = "calc(100vh - 120px)")
+                column(
+                    width = 8,
+                    div(
+                        class = "map-panel-fixed",
+                        leafletOutput("map", height = "100%")
+                    )
                 )
             )
         ),
@@ -329,11 +368,41 @@ server <- function(input, output, session) {
                 data = boundary_sf,
                 fill = FALSE,
                 color = "#F7B33C",
-                opacity = 0.8,
+                opacity = 0.9,
                 weight = 2,
                 group = grp_boundary
             ) %>%
-            # # Sage mortality raster overlay (added once; toggled via show/hide, plus legend)
+            # 2024 Drone Survey AOI
+            addPolygons(
+                data = aoi_sf,
+                fill = FALSE,
+                color = "#160B39",
+                opacity = 0.9,
+                weight = 2,
+                group = grp_aoi
+            ) %>% 
+            # Boundary legend
+            addControl(
+                html = paste0(
+                    "<div style='background: rgba(255,255,255,0.25); padding: 6px 8px; border-radius: 6px; font-size: 14px; line-height: 1.2;'>",
+                    
+                    "<div style='font-weight:600; margin-bottom:4px;'>Boundaries</div>",
+                    
+                    "<div style='display:flex; align-items:center; margin-bottom:2px;'>",
+                    "<span style='display:inline-block; width:18px; height:0; border-top:2px solid #F7B33C; margin-right:6px;'></span>",
+                    "<span>2018 MPG Boundary</span>",
+                    "</div>",
+                    
+                    "<div style='display:flex; align-items:center;'>",
+                    "<span style='display:inline-block; width:18px; height:0; border-top:2px solid #160B39; margin-right:6px;'></span>",
+                    "<span>2024 Drone Survey</span>",
+                    "</div>",
+                    
+                    "</div>"
+                ),
+                position = "bottomleft"
+            ) %>%
+            # Sage mortality raster overlay (added once; toggled via show/hide, plus legend)
             addRasterImage(
                 sagevp_r,
                 colors = pal,
@@ -379,8 +448,8 @@ server <- function(input, output, session) {
             # Control initial state of overlays
             showGroup(grp_mortality) %>%
             hideGroup(grp_thins) %>%
-            showGroup(grp_herb_pies) %>% 
-            # showGroup(grp_herb_hits) %>% 
+            showGroup(grp_herb_pies) %>%
+            showGroup(grp_aoi) %>%
             showGroup(grp_boundary)
     })
     
@@ -401,8 +470,10 @@ server <- function(input, output, session) {
                     project = TRUE,
                     group = grp_mortality
                 )
+            proxy %>% showGroup(grp_aoi)
         } else {
             proxy %>% clearGroup(grp_mortality)
+            proxy %>% hideGroup(grp_aoi)
         }
         
         if ("herbaceous" %in% sel) {
@@ -416,7 +487,7 @@ server <- function(input, output, session) {
         }  else {
             proxy %>% hideGroup(grp_thins)
         }
-        
+
         if ("boundary" %in% sel) {
             proxy %>% showGroup(grp_boundary)
         } else {
@@ -470,6 +541,12 @@ server <- function(input, output, session) {
             )
         
     }, ignoreInit = TRUE)
+    
+    # Reset map view observer
+    observeEvent(input$reset_map_view, {
+        leafletProxy("map") %>%
+            fitBounds(xmin, ymin, xmax, ymax)
+    })
 }
 
 # Run application ———————— ####
